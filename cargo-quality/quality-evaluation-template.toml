@@ -1,0 +1,35 @@
+check_quality_item = [{StaticCheck = {}}, {License = {}}, {Measure = {}}]
+check_community_ecology_item = [{DeveloperCount = {}}]
+exclude_dir = ["target"]
+
+[community_ecology_cfg]
+name = "test_community_ecology_cfg"
+
+# weight总和需等于100
+# 总分等于 static_check_result * lippy_weight + measeure_result * measeure_weight + license_result * license_weight + .....
+[quality_evaluation_cfg]
+    [quality_evaluation_cfg.static_check_cfg]
+    # static_check_result = (static_check_score - error_count * error_score - warn_count * warn_score) / static_check_score
+        error_score = 50
+        warn_score = 10
+        static_check_score = 1000
+        static_check_weight = 20
+    [quality_evaluation_cfg.measeure_cfg]
+        large_cyclomatic_complexity = 10
+        large_cyclomatic_complexity_score = 30
+        large_cognitive_complexity = 10
+        large_cognitive_complexity_score = 30
+        large_num_rows_function = 100
+        large_num_rows_function_score = 30
+        large_num_rows_file = 500
+        large_num_rows_file_score = 30
+        measure_score = 2000
+        measure_weight = 20
+    [quality_evaluation_cfg.license_cfg]
+        allow_licenses = ["Apache-2.0", "Apache-2.0 WITH LLVM-exception", "MIT", "BSD-3-Clause"]
+        deny_licenses = ["MPL-2.0", "MPL-2.0+"]
+        deny_license_score = 20
+        default_license_score = 5
+        unlicense_score = 0
+        license_eval_score = 2000
+        license_eval_weight = 20
