@@ -1,8 +1,12 @@
 [package]
-name = "cargo-guard"
+name = "cargo-quality"
 version = "0.1.0"
 edition = "2021"
+authors = ["surechen <chenshuo17@huawei.com>"]
+repository = "https://github.com/open-rust-initiative/lathes/tree/main/cargo-quality"
 license = "MIT OR Apache-2.0"
+keywords = ["quality evaluate"]
+description = "Used to evaluate the quality of Rust project."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

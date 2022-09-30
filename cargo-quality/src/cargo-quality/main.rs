@@ -2,7 +2,7 @@ extern crate anyhow;
 extern crate rust_code_analysis;
 extern crate serde_json;
 
-use cargo_guard::command;
+use cargo_quality::command;
 use clap::Parser;
 
 fn main() {
