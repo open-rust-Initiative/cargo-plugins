@@ -2,6 +2,7 @@ use crate::config;
 use crate::result;
 use crate::toolchains;
 use anyhow::{Context, Result};
+use log;
 
 #[derive(Debug)]
 pub struct MeasureCheckResult {
@@ -11,11 +12,11 @@ pub struct MeasureCheckResult {
 
 impl result::ResultInfo for MeasureCheckResult {
     fn score(&self) -> Option<u64> {
-        return self.score;
+        self.score
     }
 
     fn normalized_score(&self) -> Option<u64> {
-        return self.normalized_score;
+        self.normalized_score
     }
 
     fn details(&self) -> Option<String> {
@@ -34,7 +35,7 @@ impl super::CheckItem for MeasureCheck {
     /// Perform the Measure check
     /// The result is written to file
     fn check(&mut self, result: &mut result::Result) -> Result<()> {
-        println!("Measure check: {:?}", self.project);
+        log::info!("Measure check: {:?}", self.project);
         std::fs::create_dir_all(&self.project.result)
             .with_context(|| format!("Create result dir path failed! {:?}", self.project))?;
         let mut measure_check_tool = toolchains::make_check(

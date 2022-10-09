@@ -5,6 +5,7 @@ use crate::util;
 use anyhow::{Context, Result};
 use clap::Parser;
 use globset::{Glob, GlobSet, GlobSetBuilder};
+use log;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::collections::{hash_map, HashMap};
@@ -223,8 +224,8 @@ impl Format {
                 .collect();
             let mut path_name = "file_result___".to_string();
             for str in cleaned_path.iter() {
-                //println!("output path: str: {:?}", str);
-                if !str.contains("\\") && !str.contains("/") && !str.contains(":") {
+                //log::info!("output path: str: {:?}", str);
+                if !str.contains('\\') && !str.contains('/') && !str.contains(':') {
                     path_name += str;
                     path_name += "___";
                 }
@@ -503,16 +504,16 @@ pub struct RustCodeAnalysis {
 impl super::CheckToolOption for RustCodeAnalysis {
     // fixme: copy and edit from rust-code-analysis/rust-code-analysis-cli
     fn check(&mut self) -> Result<()> {
-        println!("RustCodeAnalysis check: {:?}", self.project_cfg);
+        log::info!("RustCodeAnalysis check: {:?}", self.project_cfg);
         // Get subdirectories under the project.
-        let exclude_dir = self.config.exclude_dir.clone().unwrap_or(vec![]);
+        let exclude_dir = self.config.exclude_dir.clone().unwrap_or_default();
         self.dir_list = util::get_all_dir(
             self.project_cfg.dir.clone(),
             r"src",
             exclude_dir,
             util::dir_and_name,
         )?;
-        println!(
+        log::info!(
             "RustCodeAnalysis check path: {:?} paths:{:?}",
             self.project_cfg.dir.clone(),
             self.dir_list
@@ -555,14 +556,14 @@ impl super::CheckToolOption for RustCodeAnalysis {
         let (preproc_lock, preproc) = match opts.preproc.len().cmp(&1) {
             Ordering::Equal => {
                 let data = read_file(&opts.preproc[0]).unwrap();
-                eprintln!("Load preproc data");
+                log::info!("Load preproc data");
                 let x = (
                     None,
                     Some(Arc::new(
                         serde_json::from_slice::<PreprocResults>(&data).unwrap(),
                     )),
                 );
-                eprintln!("Load preproc data: finished");
+                log::info!("Load preproc data: finished");
                 x
             }
             Ordering::Greater => (Some(Arc::new(Mutex::new(PreprocResults::default()))), None),
@@ -571,7 +572,7 @@ impl super::CheckToolOption for RustCodeAnalysis {
 
         let output_is_dir = opts.output.as_ref().map(|p| p.is_dir()).unwrap_or(false);
         if (opts.metrics || opts.ops) && opts.output.is_some() && !output_is_dir {
-            eprintln!("Error: The output parameter must be a directory");
+            log::info!("Error: The output parameter must be a directory");
             process::exit(1);
         }
 
@@ -635,7 +636,7 @@ impl super::CheckToolOption for RustCodeAnalysis {
         {
             Ok(_) => {}
             Err(e) => {
-                eprintln!("{:?}", e);
+                log::info!("{:?}", e);
                 process::exit(1);
             }
         };
@@ -645,7 +646,7 @@ impl super::CheckToolOption for RustCodeAnalysis {
     /// Parse the rust-code-analysis measure result into the format suitable
     /// for users and calculation.
     fn parse(&mut self) -> Result<()> {
-        println!(
+        log::info!(
             "RustCodeAnalysis parse: FUNC_SPACE_RESULT len: {:?}",
             FUNC_SPACE_RESULT.lock().unwrap().len()
         );
@@ -699,7 +700,7 @@ impl super::CheckToolOption for RustCodeAnalysis {
 
     /// Calculate the measure score
     fn count(&mut self) -> Result<()> {
-        println!("RustCodeAnalysis count: {:?}", self.parse_result);
+        log::info!("RustCodeAnalysis count: {:?}", self.parse_result);
         if let Some(config::QualityEvaluationConfig {
             measeure_cfg:
                 Some(config::MeasureEvaluationConfig {
@@ -743,7 +744,7 @@ impl super::CheckToolOption for RustCodeAnalysis {
 
     /// Process the results presented to the user
     fn result(&mut self, result: &mut result::Result) -> Result<()> {
-        println!("RustCodeAnalysis result: {:?}", self.count_result);
+        log::info!("RustCodeAnalysis result: {:?}", self.count_result);
         if let Some(result::CountResultDetail::CodeAnalysis {
             score: Some(score),
             normalized_score: Some(n_score),

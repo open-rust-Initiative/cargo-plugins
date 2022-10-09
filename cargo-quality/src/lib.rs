@@ -1,4 +1,5 @@
 extern crate anyhow;
+extern crate simple_logger;
 extern crate walkdir;
 
 pub mod check_item;

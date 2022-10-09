@@ -54,14 +54,14 @@ impl super::CheckToolOption for Clippy {
     /// Perform the Clippy check
     /// The result is written to file
     fn check(&mut self) -> Result<()> {
-        println!("Clippy check: {:?}", self.project_cfg);
+        log::info!("Clippy check: {:?}", self.project_cfg);
         if let Err(e) = util::cargo(
             "clippy",
             &self.project_cfg.manifest,
             &self.project_cfg.result,
             util::StdOutput::Err,
         ) {
-            println!("Clippy check failed: {:?}", e);
+            log::info!("Clippy check failed: {:?}", e);
         }
         self.check_result = Some(result::CheckResultDetail::Clippy {
             result: Some(self.project_cfg.result.clone()),
@@ -72,7 +72,7 @@ impl super::CheckToolOption for Clippy {
     /// Read and parse the execution result of Clippy from the file
     /// Parse and classify Lint
     fn parse(&mut self) -> Result<()> {
-        println!("Clippy parse: {:?}", self.check_result);
+        log::info!("Clippy parse: {:?}", self.check_result);
         if let Some(result::CheckResultDetail::Clippy { result: Some(p) }) = &self.check_result {
             let f = File::open(&p)?;
             let buf = BufReader::new(f).lines();
@@ -124,7 +124,7 @@ impl super::CheckToolOption for Clippy {
 
     /// Calculate the execution result of Clippy according to the config
     fn count(&mut self) -> Result<()> {
-        println!("Clippy count: {:?}", self.parse_result);
+        log::info!("Clippy count: {:?}", self.parse_result);
         if let Some(config::QualityEvaluationConfig {
             static_check_cfg: Some(static_check_cfg),
             ..
@@ -161,7 +161,7 @@ impl super::CheckToolOption for Clippy {
     /// Process the results presented to the user
     /// Clippy is currently the only static checking tool
     fn result(&mut self, result: &mut result::Result) -> Result<()> {
-        println!("Clippy result: {:?}", self.count_result);
+        log::info!("Clippy result: {:?}", self.count_result);
         if let Some(result::CountResultDetail::Clippy {
             score: Some(score),
             normalized_score: Some(n_score),
@@ -172,7 +172,7 @@ impl super::CheckToolOption for Clippy {
                 normalized_score: Some(n_score),
             })
         }
-        println!("clippy result: {:?}", result);
+        log::info!("clippy result: {:?}", result);
         Ok(())
     }
 }

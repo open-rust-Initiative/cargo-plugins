@@ -20,7 +20,7 @@ pub fn make_check<'b>(
     let project_cfg = config::ProjectInfoConfig {
         dir: p.dir.clone(),
         manifest: p.manifest.clone(),
-        result: make_result_path(&q, &p.result),
+        result: make_result_path(q, &p.result),
     };
     match &q {
         config::QualityEvaluation::StaticCheck => Box::new(static_check::StaticCheck {

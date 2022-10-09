@@ -2,6 +2,7 @@ use crate::config;
 use crate::result;
 use crate::toolchains;
 use anyhow::{Context, Result};
+use log;
 
 #[derive(Debug)]
 pub struct StaticCheckResult {
@@ -11,11 +12,11 @@ pub struct StaticCheckResult {
 
 impl result::ResultInfo for StaticCheckResult {
     fn score(&self) -> Option<u64> {
-        return self.score;
+        self.score
     }
 
     fn normalized_score(&self) -> Option<u64> {
-        return self.normalized_score;
+        self.normalized_score
     }
 
     fn details(&self) -> Option<String> {
@@ -34,7 +35,7 @@ impl super::CheckItem for StaticCheck {
     /// Perform the Static check
     /// The detail result is written to file
     fn check(&mut self, result: &mut result::Result) -> Result<()> {
-        println!("Static check: {:?}", self.project);
+        log::info!("Static check: {:?}", self.project);
         std::fs::create_dir_all(&self.project.result)
             .with_context(|| format!("Create result dir path failed! {:?}", self.project))?;
         let mut static_check_tool = toolchains::make_check(
