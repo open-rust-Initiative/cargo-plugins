@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use log;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
@@ -8,9 +9,9 @@ use walkdir::{DirEntry, WalkDir};
 
 /// Get the specified file under the path.
 pub fn dir_and_name(d: &DirEntry, name: &str, exclude: Vec<String>) -> bool {
-    if let Some(_) = exclude
+    if exclude
         .iter()
-        .find(|&name| d.path().as_os_str().to_str().unwrap().contains(name))
+        .any(|name| d.path().as_os_str().to_str().unwrap().contains(name))
     {
         return false;
     }
@@ -58,7 +59,7 @@ pub fn cargo(
         .with_context(|| format!("Failed to run command: {:?}", cmd))?;
     // `cargo clippy` will fail when has errors.
     if !output.status.success() {
-        println!("Run the cargo subcommand : {:?} failed.", sub_command);
+        log::error!("Run the cargo subcommand : {:?} failed.", sub_command);
     }
     let mut f = File::create(result_file)?;
     match std_info {

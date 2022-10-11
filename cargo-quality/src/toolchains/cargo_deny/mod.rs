@@ -5,6 +5,7 @@ use cargo::{core, ops, util};
 use cargo_deny::{diag::Files, licenses, licenses::LicenseStore, Kid};
 use krates::Builder;
 use licenses::LicenseInfo;
+use log;
 use serde::Serialize;
 use std::collections::{BTreeMap, HashSet};
 use std::fs::{File, OpenOptions};
@@ -46,7 +47,7 @@ impl super::CheckToolOption for LicenseCheck {
     /// The code of getting license informations are copied and edited from
     /// cargo-deny's subcommand 'cargo deny list'
     fn check(&mut self) -> Result<()> {
-        println!("LicenseCheck check: {:?}", self.project_cfg);
+        log::info!("LicenseCheck check: {:?}", self.project_cfg);
         let (krates, store) = rayon::join(
             || gather_krates(self.project_cfg.manifest.clone()),
             load_license_store,
@@ -103,7 +104,7 @@ impl super::CheckToolOption for LicenseCheck {
     /// Parse the original license check result into the format
     /// which is suitable for users and calculation.
     fn parse(&mut self) -> Result<()> {
-        println!(
+        log::info!(
             "LicenseCheck parse: crate_licenses len:{:?}",
             self.crate_licenses.len()
         );
@@ -170,7 +171,7 @@ impl super::CheckToolOption for LicenseCheck {
 
     /// Calculate the license score
     fn count(&mut self) -> Result<()> {
-        println!("LicenseCheck count: {:?}", self.parse_result);
+        log::info!("LicenseCheck count: {:?}", self.parse_result);
         if let Some(config::QualityEvaluationConfig {
             license_cfg:
                 Some(config::LicenseEvaluationConfig {
@@ -206,7 +207,7 @@ impl super::CheckToolOption for LicenseCheck {
 
     /// Process the results presented to the user
     fn result(&mut self, result: &mut result::Result) -> Result<()> {
-        println!("LicenseCheck result: {:?}", self.count_result);
+        log::info!("LicenseCheck result: {:?}", self.count_result);
         if let Some(result::CountResultDetail::CargoLicense {
             score: Some(score),
             normalized_score: Some(n_score),

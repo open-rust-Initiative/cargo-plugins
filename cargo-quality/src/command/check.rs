@@ -1,5 +1,8 @@
 use crate::config;
 use crate::project;
+
+use log;
+
 use anyhow::Error;
 use std::path::PathBuf;
 
@@ -35,15 +38,15 @@ pub fn check(args: Args) -> Result<(), Error> {
         }
     };
     let cfg = config::parse(cfg_path)?;
-    println!("config : {:?}", cfg);
+    log::info!("config : {:?}", cfg);
 
     let project_path = match args.project {
         Some(p) => {
-            println!("project_path from arg: {:?}", p);
+            log::info!("project_path from arg: {:?}", p);
             p
         }
         _ => {
-            println!("project_path default {:?}", now_path);
+            log::info!("project_path default {:?}", now_path);
             now_path
         }
     };
@@ -51,7 +54,7 @@ pub fn check(args: Args) -> Result<(), Error> {
     if let Ok(mut p) = project::Project::new(project_path, &cfg) {
         p.execute()?;
         let r = p.get_result();
-        println!("result json: {:?}", serde_json::json!(r));
+        log::info!("result json: {:?}", serde_json::json!(r));
     }
 
     Ok(())
